@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        sonarRunner 'sonar-scanner'
-    }
-
     stages {
 
         stage('Git Checkout') {
@@ -15,13 +11,17 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonarqube') {
-                    sh '''
-                    ${scannerHome}/bin/sonar-scanner \
-                    -Dsonar.projectKey=wordpress \
-                    -Dsonar.sources=. \
-                    -Dsonar.host.url=http://54.227.45.148:9000
-                    '''
+                script {
+                    def scannerHome = tool 'sonar-scanner'
+
+                    withSonarQubeEnv('sonarqube') {
+                        sh """
+                        ${scannerHome}/bin/sonar-scanner \
+                        -Dsonar.projectKey=wordpress \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=http://54.227.45.148:9000
+                        """
+                    }
                 }
             }
         }
